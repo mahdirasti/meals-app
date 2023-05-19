@@ -2,7 +2,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from "react-native"
 
 import React from "react"
 
-export default function CategoryGridTile({ title, color }) {
+export default function CategoryGridTile({ title, color, onPress }) {
   return (
     <View style={styles.gridItem}>
       <Pressable
@@ -10,6 +10,7 @@ export default function CategoryGridTile({ title, color }) {
           pressed ? [styles.button, styles.buttonPressed] : styles.button
         }
         anroid_ripple={"#ccc"}
+        onPress={onPress}
       >
         <View style={[styles.innerContainer, { backgroundColor: color }]}>
           <Text style={styles.title}>{title}</Text>
@@ -22,15 +23,11 @@ export default function CategoryGridTile({ title, color }) {
 const styles = StyleSheet.create({
   gridItem: {
     flex: 1,
-    margin: 16,
+    margin: 8,
     height: 150,
     borderRadius: 8,
     backgroundColor: "#fff",
     elevation: 4,
-    shadowColor: "black",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
     overflow: Platform.select({ android: "hidden" })
   },
   button: {
