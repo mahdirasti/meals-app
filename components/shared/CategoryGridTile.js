@@ -1,8 +1,17 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native"
 
 import React from "react"
+import { useNavigation } from "@react-navigation/native"
 
-export default function CategoryGridTile({ title, color, onPress }) {
+export default function CategoryGridTile({ title, color, id }) {
+  const navigator = useNavigation()
+
+  const pressHandler = () => {
+    navigator.navigate("MealsOverView", {
+      categoryId: id
+    })
+  }
+
   return (
     <View style={styles.gridItem}>
       <Pressable
@@ -10,7 +19,7 @@ export default function CategoryGridTile({ title, color, onPress }) {
           pressed ? [styles.button, styles.buttonPressed] : styles.button
         }
         anroid_ripple={"#ccc"}
-        onPress={onPress}
+        onPress={pressHandler}
       >
         <View style={[styles.innerContainer, { backgroundColor: color }]}>
           <Text style={styles.title}>{title}</Text>
