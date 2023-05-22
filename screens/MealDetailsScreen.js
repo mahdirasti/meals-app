@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import React, { useLayoutEffect } from "react"
+import React, { useLayoutEffect , useState} from "react"
 
+import IconButton from "../components/shared/IconButton"
 import { MEALS } from "../data/dummy_data"
 import MealDetails from "../components/shared/MealDetails"
 import MealIngredients from "../components/screens/meal-details/MealIngredients"
@@ -13,11 +14,27 @@ export default function MealDetailsScreen({ route }) {
 
   const categoryItem = MEALS.find((meal) => meal.id === route.params.meal_id)
 
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const headerRightHandler = () => {
+    setIsBookmarked(crt => !crt);
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: categoryItem.title
+      title: categoryItem.title,
+      headerRight: () => {
+        return (
+          <IconButton
+            name={!isBookmarked ? "bookmark-outline" : "bookmark"}
+            size={24}
+            color="white"
+            onPress={headerRightHandler}
+          />
+        )
+      }
     })
-  }, [categoryItem, navigation])
+  }, [categoryItem, navigation, isBookmarked])
 
   if (!categoryItem)
     return (
