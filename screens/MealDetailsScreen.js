@@ -1,32 +1,47 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import React, { useLayoutEffect , useState} from "react"
+import React, { useLayoutEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
+// import { FavoritesContext } from "../store/context/favorites-context"
 import IconButton from "../components/shared/IconButton"
 import { MEALS } from "../data/dummy_data"
 import MealDetails from "../components/shared/MealDetails"
 import MealIngredients from "../components/screens/meal-details/MealIngredients"
 import MealSteps from "../components/screens/meal-details/MealSteps"
 import TitleWrapper from "../components/shared/Title"
+import { favoriteActions } from "../store/redux/favorites"
 import { useNavigation } from "@react-navigation/native"
 
 export default function MealDetailsScreen({ route }) {
+  const favoriteMealIds = useSelector((state) => state.favoriteMeals.ids)
+
+  const dispatch = useDispatch()
+
+  // const favoritesContext = useContext(FavoritesContext)
+
   const navigation = useNavigation()
 
-  const categoryItem = MEALS.find((meal) => meal.id === route.params.meal_id)
+  const mealItem = MEALS.find((meal) => meal.id === route.params.meal_id)
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const isFavorited = favoriteMealIds.includes(mealItem.id)
 
   const headerRightHandler = () => {
-    setIsBookmarked(crt => !crt);
+    if (isFavorited) {
+      dispatch(favoriteActions.removeFavorite({ id: mealItem.id }))
+      // favoritesContext.removeFromFavorite(mealItem.id)
+    } else {
+      dispatch(favoriteActions.addFavorite({ id: mealItem.id }))
+      // favoritesContext.addToFavorite(mealItem.id)
+    }
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: categoryItem.title,
+      title: mealItem.title,
       headerRight: () => {
         return (
           <IconButton
-            name={!isBookmarked ? "bookmark-outline" : "bookmark"}
+            name={!isFavorited ? "bookmark-outline" : "bookmark"}
             size={24}
             color="white"
             onPress={headerRightHandler}
@@ -34,9 +49,9 @@ export default function MealDetailsScreen({ route }) {
         )
       }
     })
-  }, [categoryItem, navigation, isBookmarked])
+  }, [mealItem, navigation, isFavorited])
 
-  if (!categoryItem)
+  if (!mealItem)
     return (
       <View>
         <Text>Meal item is not exists!</Text>
@@ -46,30 +61,27 @@ export default function MealDetailsScreen({ route }) {
   return (
     <View style={styles.container}>
       <View>
-        <Image
-          style={styles.imageStyle}
-          source={{ uri: categoryItem.imageUrl }}
-        />
+        <Image style={styles.imageStyle} source={{ uri: mealItem.imageUrl }} />
       </View>
       <View style={styles.detailsWrapper}>
         <View style={styles.mealTitleWrapper}>
-          <Text style={styles.mealTitle}>{categoryItem.title}</Text>
+          <Text style={styles.mealTitle}>{mealItem.title}</Text>
         </View>
         <MealDetails
-          duration={categoryItem.duration}
-          complexity={categoryItem.complexity}
-          affordability={categoryItem.affordability}
+          duration={mealItem.duration}
+          complexity={mealItem.complexity}
+          affordability={mealItem.affordability}
         />
         <TitleWrapper title="Ingredients">
-          <MealIngredients ingredients={categoryItem.ingredients} />
+          <MealIngredients ingredients={mealItem.ingredients} />
         </TitleWrapper>
         <TitleWrapper title="Steps">
-          <MealSteps steps={categoryItem.steps} />
+          <MealSteps steps={mealItem.steps} />
         </TitleWrapper>
 
         {/* <View>
           <Text>
-            {categoryItem.isGlutenFree ? "Gluten free" : "Gluten not free"}
+            {mealItem.isGlutenFree ? "Gluten free" : "Gluten not free"}
           </Text>
         </View> */}
       </View>
